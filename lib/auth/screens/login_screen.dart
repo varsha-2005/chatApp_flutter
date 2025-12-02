@@ -66,6 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         MaterialPageRoute(builder: (context) => const ChatScreen()),
       );
     } else {
+      debugPrint(result);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(result)));
@@ -161,7 +162,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               width: double.infinity,
               height: 55,
               child: ElevatedButton(
-                onPressed: isLoading ? null : login,   // disable while loading
+                onPressed: isLoading ? null : login, // disable while loading
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF25D366),
                   shape: RoundedRectangleBorder(
@@ -169,9 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
                 child: isLoading
-                    ? const CircularProgressIndicator(
-                        color: Colors.white,
-                      )
+                    ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
                         "Login",
                         style: TextStyle(
@@ -191,25 +190,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: OutlinedButton(
                 onPressed: isLoading ? null : signInWithGoogle,
                 style: OutlinedButton.styleFrom(
-                  side:
-                      const BorderSide(color: Color(0xFF128C7E), width: 1.5),
+                  side: const BorderSide(color: Color(0xFF128C7E), width: 1.5),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: isLoading
-                    ? const CircularProgressIndicator(
-                        color: Color(0xFF128C7E),
-                      )
+                    ? const CircularProgressIndicator(color: Color(0xFF128C7E))
                     : Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // if you have google_logo.png in assets (you do in pubspec)
-                          Image.asset(
-                            'assets/google_logo.png',
-                            height: 24,
-                          ),
+                          Image.asset('assets/google_logo.png', height: 24),
                           const SizedBox(width: 12),
                           const Text(
                             "Continue with Google",
@@ -260,12 +253,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   // UI helper methods
   // -----------------------------
   OutlineInputBorder _border() => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFBDBDBD)),
-      );
+    borderRadius: BorderRadius.circular(12),
+    borderSide: const BorderSide(color: Color(0xFFBDBDBD)),
+  );
 
   OutlineInputBorder _focusedBorder() => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF128C7E), width: 2),
-      );
+    borderRadius: BorderRadius.circular(12),
+    borderSide: const BorderSide(color: Color(0xFF128C7E), width: 2),
+  );
 }

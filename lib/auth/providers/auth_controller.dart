@@ -69,26 +69,23 @@ class AuthController {
 
   Future<String?> googleSignIn() async {
     try {
-      // 1️⃣ Trigger Google sign-in (new v7 API)
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
-          .authenticate();
+      final googleSignIn = GoogleSignIn.instance;
 
-      // User closed the popup / backed out
-      if (googleUser == null) return 'Sign in aborted';
+      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
 
-      // 2️⃣ Get auth details (idToken)
-      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+      if (googleUser == null) return "Sign in aborted";
 
-      // 3️⃣ Create Firebase credential using ONLY idToken
+      final googleAuth = googleUser.authentication;
+
       final credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
       );
 
-      // 4️⃣ Sign in with Firebase
       final userCredential = await _auth.signInWithCredential(credential);
-      final user = userCredential.user!;
 
-      // 5️⃣ Save to Firestore if first time
+      final user = userCredential.user;
+      if (user == null) return "Firebase auth failed";
+
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
@@ -105,16 +102,12 @@ class AuthController {
 
         await FirebaseFirestore.instance
             .collection('users')
-            .doc(newUser.uid)
+            .doc(user.uid)
             .set(newUser.toMap());
       }
 
-      return null; // ✅ success
-    } on GoogleSignInException catch (e) {
-      // return e.errorMessage ?? e.code.toString();
-      print(e);
+      return null;
     } catch (e) {
-      // any other error
       return e.toString();
     }
   }

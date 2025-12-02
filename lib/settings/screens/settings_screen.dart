@@ -46,6 +46,7 @@ class SettingsScreen extends ConsumerWidget {
       body: userProfileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text("Error loading profile")),
+
         data: (user) {
           return userSettingsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
@@ -215,10 +216,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   // Pick image from gallery and upload
-  Future<void> _pickAndUploadImage(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _pickAndUploadImage(BuildContext context, WidgetRef ref) async {
     final picker = ImagePicker();
     final picked = await picker.pickImage(
       source: ImageSource.gallery,

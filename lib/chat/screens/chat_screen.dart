@@ -21,7 +21,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final user = FirebaseAuth.instance.currentUser;
+      final user = FirebaseAuth.instance.currentUser!;
       if (user != null) {
         ZegoService.initZego(
           userID: user.uid,
@@ -66,10 +66,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     color: Colors.red,
-                    child: const Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.delete, color: Colors.white),
                   ),
                   confirmDismiss: (direction) async {
                     final shouldDelete = await showDialog<bool>(
@@ -99,9 +96,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       await chatController.clearChatWithUser(user.uid);
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(
-                            "Chat with ${user.name} cleared",
-                          ),
+                          content: Text("Chat with ${user.name} cleared"),
                         ),
                       );
                     }
@@ -114,8 +109,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       radius: 24,
                       backgroundImage: user.image.isNotEmpty
                           ? (user.image.startsWith("http")
-                              ? NetworkImage(user.image)
-                              : AssetImage(user.image) as ImageProvider)
+                                ? NetworkImage(user.image)
+                                : AssetImage(user.image) as ImageProvider)
                           : const AssetImage("assets/google_logo.png"),
                     ),
                     title: Text(
@@ -132,8 +127,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       style: const TextStyle(color: Colors.grey),
                     ),
                     onTap: () async {
-                      final roomId =
-                          await chatController.openChatRoom(user.uid);
+                      final roomId = await chatController.openChatRoom(
+                        user.uid,
+                      );
 
                       if (!mounted) return;
 
