@@ -1,5 +1,7 @@
+import 'package:chat_app/auth/screens/signup_screen.dart';
 import 'package:chat_app/auth/screens/splash_screen.dart'; // 👈 ADD THIS
 import 'package:chat_app/call/services/zego_service.dart';
+import 'package:chat_app/chat/screens/chat_screen.dart';
 import 'package:chat_app/settings/providers/settings.providers.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -54,6 +56,10 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       home: const SplashScreen(),
+      routes: {
+        '/chat': (context) => const ChatScreen(),
+        '/signup': (context) => const SignupScreen(),
+      },
     );
   }
 }
