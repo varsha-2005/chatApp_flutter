@@ -303,6 +303,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                     final isMe = msg.senderId ==
                         ref.read(chatControllerProvider).currentUserId;
 
+                    final timeStr = msg.timeSent
+                        .toLocal()
+                        .toString()
+                        .substring(11, 16);
+
                     return GestureDetector(
                       onLongPress: () => _onMessageLongPress(msg, isMe),
                       child: Align(
@@ -310,8 +315,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
                         child: Column(
-                          crossAxisAlignment:
-                              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
                           children: [
                             if (msg.imageUrl != null &&
                                 msg.imageUrl!.isNotEmpty)
@@ -321,19 +327,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                                     ? ChatVideoBubble(
                                         url: msg.imageUrl!,
                                         isMe: isMe,
+                                        time: timeStr, // ⏰ time for video
                                       )
                                     : ChatImageBubble(
                                         url: msg.imageUrl!,
                                         isMe: isMe,
+                                        time: timeStr, // ⏰ time for image
                                       ),
                               ),
                             if (msg.message.isNotEmpty)
                               ChatBubble(
                                 text: msg.message,
-                                time: msg.timeSent
-                                    .toLocal()
-                                    .toString()
-                                    .substring(11, 16),
+                                time: timeStr,
                                 isMe: isMe,
                               ),
                           ],

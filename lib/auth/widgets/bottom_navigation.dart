@@ -1,4 +1,3 @@
-import 'package:chat_app/auth/screens/community_screen.dart';
 import 'package:chat_app/status/screens/update_screen.dart';
 import 'package:chat_app/call/screens/call_screen.dart';
 import 'package:chat_app/chat/screens/chat_screen.dart';
@@ -25,33 +24,28 @@ class BottomNavigation extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (_) => const UpdatesScreen(), // ✅ no currentUser
+                builder: (_) => const UpdatesScreen(), 
               ),
             );
             break;
 
-          case 1:
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const CommunityScreen()),
-            );
-            break;
+          
 
-          case 2:
+          case 1:
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const ChatScreen()),
             );
             break;
 
-          case 3:
+          case 2:
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const CallsScreen()),
             );
             break;
 
-          case 4:
+          case 3:
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (_) => const SettingsScreen()),
@@ -61,7 +55,6 @@ class BottomNavigation extends StatelessWidget {
       },
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.update), label: "Updates"),
-        BottomNavigationBarItem(icon: Icon(Icons.people), label: "Communities"),
         BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: "Chats"),
         BottomNavigationBarItem(icon: Icon(Icons.call), label: "Calls"),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: "Settings"),

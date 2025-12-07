@@ -199,7 +199,7 @@ class SettingsScreen extends ConsumerWidget {
 
       // ----------------- BOTTOM NAVIGATION -----------------
       bottomNavigationBar: const BottomNavigation(
-        selectedIndex: 4,
+        selectedIndex: 3,
       ), // 4 = Settings tab
     );
   }
