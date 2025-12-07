@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:chat_app/auth/models/user_model.dart';
 import 'package:chat_app/auth/providers/auth_controller.dart';
 import 'package:chat_app/auth/screens/signup_screen.dart';

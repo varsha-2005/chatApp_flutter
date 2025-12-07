@@ -3,6 +3,7 @@ import 'package:chat_app/chat/models/chat_room_model.dart';
 import 'package:chat_app/chat/models/message_model.dart';
 import 'package:chat_app/chat/providers/chat_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
 
 class ChatController {
   final ChatRepository repo;
@@ -16,10 +17,7 @@ class ChatController {
   Future<String> openChatRoom(String otherUid) =>
       repo.createOrGetRoom(otherUid);
 
-  Future<void> sendMessage({
-    required String roomId,
-    required String text,
-  }) =>
+  Future<void> sendMessage({required String roomId, required String text}) =>
       repo.sendMessage(roomId: roomId, text: text);
 
   String get currentUserId => FirebaseAuth.instance.currentUser!.uid;
@@ -47,6 +45,20 @@ class ChatController {
     required String messageId,
   }) async {
     await repo.deleteMessage(roomId: roomId, messageId: messageId);
+  }
+
+  Future<void> sendMediaMessage({
+    required String roomId,
+    required File file,
+    required bool isVideo,
+    String? text,
+  }) {
+    return repo.sendMediaMessage(
+      roomId: roomId,
+      file: file,
+      isVideo: isVideo,
+      text: text,
+    );
   }
 
   // ✏ Edit single message

@@ -3,7 +3,8 @@ class ChatMessage {
   final String roomId;      // chat room id
   final String senderId;    // who sent the message
   final String message;     // text
-  final String? imageUrl;   // for images
+  final String? imageUrl;   // image or video URL
+  final bool isVideo;       // ✅ new: true if this is a video
   final DateTime timeSent;
   final bool isSeen;        // for personal chats
   final List<String>? seenBy; // for groups → list of user ids
@@ -14,6 +15,7 @@ class ChatMessage {
     required this.senderId,
     required this.message,
     this.imageUrl,
+    required this.isVideo,          // ✅ required in constructor
     required this.timeSent,
     required this.isSeen,
     this.seenBy,
@@ -26,6 +28,7 @@ class ChatMessage {
       'senderId': senderId,
       'message': message,
       'imageUrl': imageUrl,
+      'isVideo': isVideo, // ✅ store media type
       'timeSent': timeSent.millisecondsSinceEpoch,
       'isSeen': isSeen,
       'seenBy': seenBy,
@@ -39,6 +42,7 @@ class ChatMessage {
       senderId: map['senderId'],
       message: map['message'],
       imageUrl: map['imageUrl'],
+      isVideo: map['isVideo'] ?? false, 
       timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent']),
       isSeen: map['isSeen'] ?? false,
       seenBy:

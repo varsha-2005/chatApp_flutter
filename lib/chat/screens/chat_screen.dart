@@ -3,7 +3,9 @@ import 'package:chat_app/auth/widgets/chat_base_layout.dart';
 import 'package:chat_app/call/services/zego_service.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
 import 'package:chat_app/chat/screens/chat_detail_screen.dart';
+import 'package:chat_app/chat/screens/profile_image_screen.dart';
 import 'package:chat_app/chat/screens/select_member.dart';
+// import 'package:chat_app/profile/screens/profile_image_screen.dart'; // 👈 NEW
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -105,13 +107,33 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     return false;
                   },
                   child: ListTile(
-                    leading: CircleAvatar(
-                      radius: 24,
-                      backgroundImage: user.image.isNotEmpty
-                          ? (user.image.startsWith("http")
-                                ? NetworkImage(user.image)
-                                : AssetImage(user.image) as ImageProvider)
-                          : const AssetImage("assets/google_logo.png"),
+                    leading: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProfileImageScreen(
+                              imageUrl: user.image.isNotEmpty
+                                  ? user.image
+                                  : "assets/google_logo.png",
+                              userName: user.name,
+                              heroTag: "profile-${user.uid}",
+                            ),
+                          ),
+                        );
+                      },
+                      child: Hero(
+                        tag: "profile-${user.uid}",
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundImage: user.image.isNotEmpty
+                              ? (user.image.startsWith("http")
+                                  ? NetworkImage(user.image)
+                                  : AssetImage(user.image)
+                                      as ImageProvider)
+                              : const AssetImage("assets/google_logo.png"),
+                        ),
+                      ),
                     ),
                     title: Text(
                       user.uid == currentUser.uid

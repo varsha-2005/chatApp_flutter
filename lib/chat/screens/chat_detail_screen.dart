@@ -1,3 +1,4 @@
+// lib/chat/screens/chat_detail_screen.dart
 import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/call/providers/call_controller.dart';
 import 'package:chat_app/chat/models/message_model.dart';
@@ -6,6 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
 import 'package:zego_uikit/zego_uikit.dart';
+
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:video_player/video_player.dart';
+import 'chat_bubbles.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -26,6 +32,7 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final ImagePicker _picker = ImagePicker(); // ✅ for picking image/video
 
   void sendMessage() async {
     final text = _messageController.text.trim();
@@ -36,6 +43,65 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
     _messageController.clear();
     Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
+
+  /// ✅ Pick image / video and send as a chat message
+  Future<void> _pickAndSendMedia() async {
+    final chatController = ref.read(chatControllerProvider);
+
+    // bottom sheet: choose image or video
+    final type = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.image),
+                title: const Text('Send Image'),
+                onTap: () => Navigator.pop(ctx, 'image'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.videocam),
+                title: const Text('Send Video'),
+                onTap: () => Navigator.pop(ctx, 'video'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (type == null) return;
+
+    XFile? picked;
+    bool isVideo = false;
+
+    if (type == 'image') {
+      picked = await _picker.pickImage(source: ImageSource.gallery);
+      isVideo = false;
+    } else if (type == 'video') {
+      picked = await _picker.pickVideo(source: ImageSource.gallery);
+      isVideo = true;
+    }
+
+    if (picked == null) return;
+
+    final file = File(picked.path);
+
+    await chatController.sendMediaMessage(
+      roomId: widget.roomId,
+      file: file,
+      isVideo: isVideo,
+      text: null, // caption support later if you want
+    );
+
+    Future.delayed(const Duration(milliseconds: 200), () {
       if (_scrollController.hasClients) {
         _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
       }
@@ -235,9 +301,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   itemBuilder: (context, index) {
                     final msg = messages[index];
                     final isMe = msg.senderId ==
-                        ref
-                            .read(chatControllerProvider)
-                            .currentUserId;
+                        ref.read(chatControllerProvider).currentUserId;
 
                     return GestureDetector(
                       onLongPress: () => _onMessageLongPress(msg, isMe),
@@ -245,13 +309,34 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                         alignment: isMe
                             ? Alignment.centerRight
                             : Alignment.centerLeft,
-                        child: ChatBubble(
-                          text: msg.message,
-                          time: msg.timeSent
-                              .toLocal()
-                              .toString()
-                              .substring(11, 16),
-                          isMe: isMe,
+                        child: Column(
+                          crossAxisAlignment:
+                              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          children: [
+                            if (msg.imageUrl != null &&
+                                msg.imageUrl!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4.0),
+                                child: msg.isVideo
+                                    ? ChatVideoBubble(
+                                        url: msg.imageUrl!,
+                                        isMe: isMe,
+                                      )
+                                    : ChatImageBubble(
+                                        url: msg.imageUrl!,
+                                        isMe: isMe,
+                                      ),
+                              ),
+                            if (msg.message.isNotEmpty)
+                              ChatBubble(
+                                text: msg.message,
+                                time: msg.timeSent
+                                    .toLocal()
+                                    .toString()
+                                    .substring(11, 16),
+                                isMe: isMe,
+                              ),
+                          ],
                         ),
                       ),
                     );
@@ -265,7 +350,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             color: Colors.white,
             child: Row(
               children: [
-                const Icon(Icons.add, color: Colors.grey),
+                GestureDetector(
+                  onTap: _pickAndSendMedia,
+                  child: const Icon(Icons.add, color: Colors.grey),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: TextField(
@@ -293,53 +381,6 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                 ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ChatBubble extends StatelessWidget {
-  final String text;
-  final String time;
-  final bool isMe;
-
-  const ChatBubble({
-    super.key,
-    required this.text,
-    required this.time,
-    required this.isMe,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: isMe ? const Color(0xFFDCF8C6) : Colors.white,
-        borderRadius: BorderRadius.only(
-          topLeft: const Radius.circular(12),
-          topRight: const Radius.circular(12),
-          bottomLeft:
-              isMe ? const Radius.circular(12) : const Radius.circular(0),
-          bottomRight:
-              isMe ? const Radius.circular(0) : const Radius.circular(12),
-        ),
-      ),
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.75,
-      ),
-      child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          Text(text, style: const TextStyle(fontSize: 16)),
-          const SizedBox(height: 5),
-          Text(
-            time,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ),

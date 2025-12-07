@@ -3,10 +3,15 @@ import 'package:chat_app/chat/models/chat_room_model.dart';
 import 'package:chat_app/chat/models/message_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as p;
+
 
 class ChatRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseStorage _storage = FirebaseStorage.instance;
 
   Stream<List<ChatRoom>> getAllRooms() {
     final uid = _auth.currentUser!.uid;
@@ -103,10 +108,55 @@ class ChatRepository {
       timeSent: DateTime.now(),
       isSeen: false,
       imageUrl: null,
+      isVideo: false,
       seenBy: [],
     );
     await msgRef.set(message.toMap());
   }
+
+    Future<void> sendMediaMessage({
+    required String roomId,
+    required File file,
+    required bool isVideo,
+    String? text,
+  }) async {
+    final myUid = _auth.currentUser!.uid;
+
+    // 1️⃣ Upload file to Firebase Storage
+    final ext = p.extension(file.path);
+    final fileName = '${DateTime.now().millisecondsSinceEpoch}$ext';
+
+    final ref = _storage
+        .ref()
+        .child('chatMedia')
+        .child(roomId)
+        .child(fileName);
+
+    final uploadTask = await ref.putFile(file);
+    final downloadUrl = await uploadTask.ref.getDownloadURL();
+
+    // 2️⃣ Create message document
+    final msgRef = _firestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc();
+
+    final message = ChatMessage(
+      id: msgRef.id,
+      roomId: roomId,
+      senderId: myUid,
+      message: text ?? '',    // optional caption
+      imageUrl: downloadUrl,  // ✅ image or video URL
+      isVideo: isVideo,
+      timeSent: DateTime.now(),
+      isSeen: false,
+      seenBy: [],
+    );
+
+    await msgRef.set(message.toMap());
+  }
+
 
   // 🧹 Clear all messages in a room, but keep the chat room & contact
   Future<void> clearChat(String roomId) async {
