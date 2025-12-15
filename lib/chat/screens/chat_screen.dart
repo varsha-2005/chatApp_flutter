@@ -128,9 +128,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                           radius: 24,
                           backgroundImage: user.image.isNotEmpty
                               ? (user.image.startsWith("http")
-                                  ? NetworkImage(user.image)
-                                  : AssetImage(user.image)
-                                      as ImageProvider)
+                                    ? NetworkImage(user.image)
+                                    : AssetImage(user.image) as ImageProvider)
                               : const AssetImage("assets/google_logo.png"),
                         ),
                       ),

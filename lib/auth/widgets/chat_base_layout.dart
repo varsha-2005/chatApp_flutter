@@ -6,7 +6,6 @@ import 'package:chat_app/chat/screens/groups_screen.dart';
 import 'package:chat_app/chat/screens/unread_screen.dart';
 import 'package:flutter/material.dart';
 
-
 class BaseChatLayout extends StatelessWidget {
   final Widget content;
   final String selectedChip;
@@ -20,8 +19,6 @@ class BaseChatLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

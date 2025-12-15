@@ -131,8 +131,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                 title: const Text("Edit message"),
                 onTap: () async {
                   Navigator.pop(context);
-                  final newText =
-                      await _showEditMessageDialog(initialText: msg.message);
+                  final newText = await _showEditMessageDialog(
+                    initialText: msg.message,
+                  );
                   if (newText != null && newText.trim().isNotEmpty) {
                     await chatController.editMessage(
                       roomId: widget.roomId,
@@ -170,9 +171,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         content: TextField(
           controller: controller,
           maxLines: null,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-          ),
+          decoration: const InputDecoration(border: OutlineInputBorder()),
         ),
         actions: [
           TextButton(
@@ -180,8 +179,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             child: const Text("Cancel"),
           ),
           TextButton(
-            onPressed: () =>
-                Navigator.pop(context, controller.text.trim()),
+            onPressed: () => Navigator.pop(context, controller.text.trim()),
             child: const Text("Save"),
           ),
         ],
@@ -191,14 +189,14 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final chatStream =
-        ref.watch(chatControllerProvider).getMessages(widget.roomId);
+    final chatStream = ref
+        .watch(chatControllerProvider)
+        .getMessages(widget.roomId);
 
     final auth = ref.watch(authProvider);
     final currentUser = auth.currentUser;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFECE5DD),
       appBar: AppBar(
         backgroundColor: const Color(0xFF128C7E),
         elevation: 0,
@@ -237,10 +235,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             onPressed: (code, message, p2) {
               if (code.isNotEmpty || currentUser == null) return;
 
-              ref.read(callControllerProvider).saveCallHistory(
-                    callId: DateTime.now()
-                        .millisecondsSinceEpoch
-                        .toString(),
+              ref
+                  .read(callControllerProvider)
+                  .saveCallHistory(
+                    callId: DateTime.now().millisecondsSinceEpoch.toString(),
                     receiverId: widget.roomId,
                     receiverName: widget.userName,
                     receiverPic: widget.userImage,
@@ -264,10 +262,10 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             onPressed: (code, message, p2) {
               if (code.isNotEmpty || currentUser == null) return;
 
-              ref.read(callControllerProvider).saveCallHistory(
-                    callId: DateTime.now()
-                        .millisecondsSinceEpoch
-                        .toString(),
+              ref
+                  .read(callControllerProvider)
+                  .saveCallHistory(
+                    callId: DateTime.now().millisecondsSinceEpoch.toString(),
                     receiverId: widget.roomId,
                     receiverName: widget.userName,
                     receiverPic: widget.userImage,
@@ -300,13 +298,14 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   itemCount: messages.length,
                   itemBuilder: (context, index) {
                     final msg = messages[index];
-                    final isMe = msg.senderId ==
+                    final isMe =
+                        msg.senderId ==
                         ref.read(chatControllerProvider).currentUserId;
 
-                    final timeStr = msg.timeSent
-                        .toLocal()
-                        .toString()
-                        .substring(11, 16);
+                    final timeStr = msg.timeSent.toLocal().toString().substring(
+                      11,
+                      16,
+                    );
 
                     return GestureDetector(
                       onLongPress: () => _onMessageLongPress(msg, isMe),
@@ -367,8 +366,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                       hintText: "Message",
                       fillColor: Colors.grey.shade200,
                       filled: true,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 15),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(25),
                         borderSide: BorderSide.none,

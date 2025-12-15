@@ -15,6 +15,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileProvider);
     final userSettingsAsync = ref.watch(userSettingsProvider);
+    print(userProfileAsync);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,7 +45,7 @@ class SettingsScreen extends ConsumerWidget {
 
       body: userProfileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => const Center(child: Text("Error loading profile")),
+        error: (_, _) => const Center(child: Text("Error loading profile")),
 
         data: (user) {
           return userSettingsAsync.when(

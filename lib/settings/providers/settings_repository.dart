@@ -13,11 +13,12 @@ class SettingsRepository {
   String get uid => _auth.currentUser!.uid;
 
   Stream<AppUser> watchUserProfile() {
-    return _firestore
-        .collection('users')
-        .doc(uid)
-        .snapshots()
-        .map((snapshot) => AppUser.fromMap(snapshot.data()!));
+    return _firestore.collection('users').doc(uid).snapshots().map((snapshot) {
+      if (!snapshot.exists || snapshot.data() == null) {
+        throw Exception("User profile not found");
+      }
+      return AppUser.fromMap(snapshot.data()!);
+    });
   }
 
   Stream<UserSetting> watchUserSettings() {
@@ -28,7 +29,7 @@ class SettingsRepository {
         .doc("prefs")
         .snapshots()
         .map(
-          (doc) => doc.exists
+          (doc) => doc.exists && doc.data() != null
               ? UserSetting.fromMap(doc.data()!)
               : UserSetting(readChats: true),
         );

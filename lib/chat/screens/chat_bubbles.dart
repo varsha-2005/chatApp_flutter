@@ -23,25 +23,25 @@ class ChatBubble extends StatelessWidget {
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(12),
           topRight: const Radius.circular(12),
-          bottomLeft:
-              isMe ? const Radius.circular(12) : const Radius.circular(0),
-          bottomRight:
-              isMe ? const Radius.circular(0) : const Radius.circular(12),
+          bottomLeft: isMe
+              ? const Radius.circular(12)
+              : const Radius.circular(0),
+          bottomRight: isMe
+              ? const Radius.circular(0)
+              : const Radius.circular(12),
         ),
       ),
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.75,
       ),
       child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Text(text, style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 5),
-          Text(
-            time,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          Text(time, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
     );
@@ -70,8 +70,9 @@ class ChatImageBubble extends StatelessWidget {
       ),
       padding: const EdgeInsets.all(4),
       child: Column(
-        crossAxisAlignment:
-            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
@@ -82,10 +83,7 @@ class ChatImageBubble extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            time,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
-          ),
+          Text(time, style: const TextStyle(fontSize: 12, color: Colors.grey)),
         ],
       ),
     );
@@ -176,9 +174,7 @@ class _ChatVideoBubbleState extends State<ChatVideoBubble> {
               : const SizedBox(
                   height: 150,
                   width: 150,
-                  child: Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  child: Center(child: CircularProgressIndicator()),
                 ),
           const SizedBox(height: 4),
           Text(

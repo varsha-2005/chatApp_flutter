@@ -1,5 +1,5 @@
 import 'package:chat_app/auth/screens/signup_screen.dart';
-import 'package:chat_app/auth/screens/splash_screen.dart'; // 👈 ADD THIS
+import 'package:chat_app/auth/screens/splash_screen.dart';
 import 'package:chat_app/call/services/zego_service.dart';
 import 'package:chat_app/chat/screens/chat_screen.dart';
 import 'package:chat_app/settings/providers/settings.providers.dart';
@@ -53,8 +53,8 @@ class _MyAppState extends ConsumerState<MyApp> {
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: _lightTheme(),
+      darkTheme: _darkTheme(),
       home: const SplashScreen(),
       routes: {
         '/chat': (context) => const ChatScreen(),
@@ -62,4 +62,59 @@ class _MyAppState extends ConsumerState<MyApp> {
       },
     );
   }
+}
+
+// Light Theme Configuration
+ThemeData _lightTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    primaryColor: const Color(0xFF128C7E), // WhatsApp green
+    scaffoldBackgroundColor: Colors.white,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF128C7E),
+      foregroundColor: Colors.white,
+      elevation: 0,
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Color(0xFF128C7E),
+      foregroundColor: Colors.white,
+    ),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.black87),
+      bodySmall: TextStyle(color: Colors.grey),
+    ),
+    iconTheme: const IconThemeData(color: Colors.black87),
+    dividerColor: Colors.grey[300],
+  );
+}
+
+// Dark Theme Configuration
+ThemeData _darkTheme() {
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    primaryColor: const Color.fromARGB(255, 9, 209, 92),
+    scaffoldBackgroundColor: const Color.fromARGB(
+      255,
+      0,
+      0,
+      0,
+    ), // Dark background
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF1F2937), // Dark gray
+      foregroundColor: Colors.white,
+      elevation: 0,
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: Color(0xFF128C7E),
+      foregroundColor: Colors.white,
+    ),
+    textTheme: const TextTheme(
+      bodyMedium: TextStyle(color: Colors.white70),
+      bodySmall: TextStyle(color: Colors.grey),
+    ),
+    iconTheme: const IconThemeData(color: Colors.white70),
+    dividerColor: Colors.grey[800],
+  );
 }

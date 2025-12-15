@@ -1,4 +1,3 @@
-
 import 'package:chat_app/metaAi/models/meta_ai_message.dart';
 import 'package:chat_app/metaAi/providers/meta_ai_provider.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +35,6 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
     final messages = ref.watch(metaAIControllerProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -57,6 +55,10 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
             },
           ),
         ],
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black54),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
       body: Column(
         children: [
@@ -85,10 +87,7 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
                       SizedBox(height: 10),
                       Text(
                         "Ask anything — instant answers, ideas, and more.",
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Colors.black54,
-                        ),
+                        style: TextStyle(fontSize: 15, color: Colors.black54),
                       ),
                     ],
                   ),
@@ -98,10 +97,7 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
 
                 const Text(
                   "Try asking:",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 15),
 
@@ -159,9 +155,7 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
         ),
         child: Text(
           msg.text,
-          style: TextStyle(
-            color: isUser ? Colors.white : Colors.black87,
-          ),
+          style: TextStyle(color: isUser ? Colors.white : Colors.black87),
         ),
       ),
     );
@@ -198,8 +192,9 @@ class _MetaAIScreenState extends ConsumerState<MetaAIScreen> {
               backgroundColor: _isSending ? Colors.grey : Colors.blue,
               child: IconButton(
                 icon: const Icon(Icons.send, color: Colors.white),
-                onPressed:
-                    _isSending ? null : () => _handleSend(_msgController.text),
+                onPressed: _isSending
+                    ? null
+                    : () => _handleSend(_msgController.text),
               ),
             ),
           ],
