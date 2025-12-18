@@ -31,6 +31,15 @@ class ChatRepository {
     });
   }
 
+  // return _firestore
+  // .collection("users")
+  // .snapshots()
+  // .map(
+  //   (snapshot) =>
+  //     snapshot.docs.map((doc) => AppUser.fromMap(doc.data())).toList()
+  // );
+
+
   Stream<List<ChatMessage>> getMessages(String roomId) {
     return _firestore
         .collection('chatRooms')

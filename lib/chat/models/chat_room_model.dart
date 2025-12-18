@@ -26,14 +26,18 @@ class ChatRoom {
     };
   }
 
-  factory ChatRoom.fromMap(Map<String, dynamic> map) {
+  factory ChatRoom.fromMap(Map<String, dynamic> firebaseData) {
     return ChatRoom(
-      roomId: map['roomId'],
-      members: List<String>.from(map['members']),
-      isGroup: map['isGroup'],
-      groupName: map['groupName'],
-      groupImage: map['groupImage'],
-      createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
+      roomId: firebaseData['roomId'],
+      members: List<String>.from(firebaseData['members']),
+      isGroup: firebaseData['isGroup'],
+      groupName: firebaseData['groupName'],
+      groupImage: firebaseData['groupImage'],
+      createdAt: DateTime.fromMillisecondsSinceEpoch(firebaseData['createdAt']),
     );
   }
 }
+
+
+// toMap => Converts ChatRoom instance to a Map for Firestore storage...like converting object to dictionary(key-value pairs)
+// fromMap => Creates ChatRoom instance from Firestore data...like converting dictionary(key-value pairs) back to object

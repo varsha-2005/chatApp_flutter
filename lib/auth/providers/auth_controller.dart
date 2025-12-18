@@ -1,19 +1,11 @@
-import 'package:chat_app/auth/models/user_model.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'auth_provider.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-
-final authControllerProvider = Provider<AuthController>(
-  (ref) => AuthController(ref),
-);
+import 'auth_repository.dart';
 
 class AuthController {
-  final Ref ref;
-  AuthController(this.ref);
+  final AuthRepository repo;
+  AuthController(this.repo);
 
-  FirebaseAuth get _auth => ref.read(authProvider);
+  User? get currentUser => repo.currentUser;
 
   Future<String?> signup({
     required String name,
@@ -21,27 +13,16 @@ class AuthController {
     required String password,
   }) async {
     try {
-      final cred = await _auth.createUserWithEmailAndPassword(
+      await repo.signup(
+        name: name,
         email: email,
         password: password,
       );
-
-      final newUser = AppUser(
-        uid: cred.user!.uid,
-        name: name,
-        email: email,
-        image: 'assets/google_logo.png',
-        lastSeen: DateTime.now(),
-      );
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(newUser.uid)
-          .set(newUser.toMap());
-
       return null;
     } on FirebaseAuthException catch (e) {
       return e.message;
+    } catch (e) {
+      return e.toString();
     }
   }
 
@@ -50,18 +31,20 @@ class AuthController {
     required String password,
   }) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await repo.login(
+        email: email,
+        password: password,
+      );
       return null;
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
   }
 
-  // ✅ FORGOT PASSWORD LOGIC (only added, nothing else changed)
   Future<String?> resetPassword(String email) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
-      return null; // success
+      await repo.resetPassword(email);
+      return null;
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
@@ -69,50 +52,12 @@ class AuthController {
 
   Future<String?> googleSignIn() async {
     try {
-      final googleSignIn = GoogleSignIn.instance;
-
-      final GoogleSignInAccount? googleUser = await googleSignIn.authenticate();
-
-      if (googleUser == null) return "Sign in aborted";
-
-      final googleAuth = googleUser.authentication;
-
-      final credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await _auth.signInWithCredential(credential);
-
-      final user = userCredential.user;
-      if (user == null) return "Firebase auth failed";
-
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (!userDoc.exists) {
-        final newUser = AppUser(
-          uid: user.uid,
-          name: user.displayName ?? "Unknown User",
-          email: user.email ?? "",
-          image: user.photoURL ?? "assets/google_logo.png",
-          lastSeen: DateTime.now(),
-        );
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user.uid)
-            .set(newUser.toMap());
-      }
-
+      await repo.googleSignIn();
       return null;
     } catch (e) {
       return e.toString();
     }
   }
 
-  Future<void> logout() async {
-    await _auth.signOut();
-  }
+  Future<void> logout() => repo.logout();
 }

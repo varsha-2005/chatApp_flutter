@@ -9,6 +9,8 @@ class ChatController {
   final ChatRepository repo;
   ChatController(this.repo);
 
+  // final ChatRepository repo = ChatRepository(); // bad practice
+
   Stream<List<ChatRoom>> getAllRooms() => repo.getAllRooms();
   Stream<List<ChatMessage>> getMessages(String roomId) =>
       repo.getMessages(roomId);

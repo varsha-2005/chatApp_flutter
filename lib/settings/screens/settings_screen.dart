@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:chat_app/auth/models/user_model.dart';
 import 'package:chat_app/auth/providers/auth_controller.dart';
+import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/auth/screens/signup_screen.dart';
 import 'package:chat_app/auth/widgets/bottom_navigation.dart';
 import 'package:chat_app/settings/providers/settings.providers.dart';

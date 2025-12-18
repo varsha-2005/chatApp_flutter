@@ -3,6 +3,7 @@ import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/call/providers/call_controller.dart';
 import 'package:chat_app/chat/models/message_model.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zego_uikit_prebuilt_call/zego_uikit_prebuilt_call.dart';
@@ -193,8 +194,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         .watch(chatControllerProvider)
         .getMessages(widget.roomId);
 
-    final auth = ref.watch(authProvider);
-    final currentUser = auth.currentUser;
+    // final authController = ref.watch(authControllerProvider);
+    final currentUser = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
       appBar: AppBar(
