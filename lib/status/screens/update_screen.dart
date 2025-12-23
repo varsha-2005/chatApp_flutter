@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:chat_app/auth/models/user_model.dart';
 import 'package:chat_app/auth/widgets/bottom_navigation.dart';
 import 'package:chat_app/status/providers/status_provider.dart';

@@ -1,13 +1,18 @@
 import 'package:chat_app/auth/models/user_model.dart';
-import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SelectMembersScreen extends ConsumerStatefulWidget {
-  const SelectMembersScreen({super.key});
+  final bool isAddMembers;
+  final String? existingGroupName;
+
+  const SelectMembersScreen({
+    super.key,
+    this.isAddMembers = false,
+    this.existingGroupName,
+  });
 
   @override
   ConsumerState<SelectMembersScreen> createState() =>
@@ -21,8 +26,13 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
   @override
   void initState() {
     super.initState();
+
     final currentUser = FirebaseAuth.instance.currentUser!;
     selectedMembers.add(currentUser.uid);
+
+    if (widget.isAddMembers && widget.existingGroupName != null) {
+      groupNameController.text = widget.existingGroupName!;
+    }
   }
 
   @override
@@ -31,7 +41,11 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
     final currentUser = FirebaseAuth.instance.currentUser!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Select Members")),
+      appBar: AppBar(
+        title: Text(
+          widget.isAddMembers ? "Add Members" : "Select Members",
+        ),
+      ),
       body: StreamBuilder<List<AppUser>>(
         stream: chatController.getAllUsers(),
         builder: (context, snapshot) {
@@ -81,19 +95,35 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
                   children: [
                     TextField(
                       controller: groupNameController,
-                      decoration: const InputDecoration(
+                      enabled: !widget.isAddMembers,
+                      decoration: InputDecoration(
                         labelText: "Group Name",
-                        border: OutlineInputBorder(),
+                        border: const OutlineInputBorder(),
+                        filled: widget.isAddMembers,
+                        fillColor: widget.isAddMembers
+                            ? Colors.grey.shade200
+                            : null,
                       ),
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () async {
-                        final groupName = groupNameController.text.trim();
+                        if (widget.isAddMembers) {
+                          Navigator.pop(
+                            context,
+                            selectedMembers.toList(),
+                          );
+                          return;
+                        }
+
+                        final groupName =
+                            groupNameController.text.trim();
+
                         if (groupName.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Please enter a group name"),
+                              content:
+                                  Text("Please enter a group name"),
                             ),
                           );
                           return;
@@ -102,24 +132,26 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
                         if (selectedMembers.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text("Select at least one member"),
+                              content:
+                                  Text("Select at least one member"),
                             ),
                           );
                           return;
                         }
 
-                        // Create group room
-                        final roomId = await chatController.createGroupRoom(
+                        final roomId =
+                            await chatController.createGroupRoom(
                           memberUids: selectedMembers.toList(),
                           groupName: groupName,
                         );
 
-                        Navigator.pop(
-                          context,
-                          roomId,
-                        ); // return roomId if needed
+                        Navigator.pop(context, roomId);
                       },
-                      child: const Text("Create Group"),
+                      child: Text(
+                        widget.isAddMembers
+                            ? "Add Members"
+                            : "Create Group",
+                      ),
                     ),
                   ],
                 ),

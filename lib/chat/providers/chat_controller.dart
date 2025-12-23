@@ -48,6 +48,20 @@ class ChatController {
     await repo.clearChat(roomId);
   }
 
+  Future<void> addMembersToGroup({
+    required String roomId,
+    required List<String> memberUids,
+  }) {
+    return repo.addMembersToGroup(roomId: roomId, newMemberUids: memberUids);
+  }
+
+  Future<void> updateGroupName({
+    required String roomId,
+    required String newName,
+  }) {
+    return repo.updateGroupName(roomId: roomId, newName: newName);
+  }
+
   // 🗑 Delete single message
   Future<void> deleteMessage({
     required String roomId,
@@ -97,6 +111,17 @@ class ChatController {
     required String messageId,
   }) {
     return repo.deleteMessageForMe(
+      roomId: roomId,
+      messageId: messageId,
+      uid: currentUserId,
+    );
+  }
+
+  Future<void> markMessageSeen({
+    required String roomId,
+    required String messageId,
+  }) {
+    return repo.markMessageSeen(
       roomId: roomId,
       messageId: messageId,
       uid: currentUserId,

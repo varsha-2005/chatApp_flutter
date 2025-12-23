@@ -101,6 +101,24 @@ class ChatRepository {
         .map((doc) => ChatRoom.fromMap(doc.data()!));
   }
 
+  Future<void> addMembersToGroup({
+    required String roomId,
+    required List<String> newMemberUids,
+  }) async {
+    await _firestore.collection('chatRooms').doc(roomId).update({
+      'members': FieldValue.arrayUnion(newMemberUids),
+    });
+  }
+
+  Future<void> updateGroupName({
+    required String roomId,
+    required String newName,
+  }) async {
+    await _firestore.collection('chatRooms').doc(roomId).update({
+      'groupName': newName,
+    });
+  }
+
   Future<String> createOrGetRoom(String otherUid) async {
     final myUid = _auth.currentUser!.uid;
 
@@ -186,6 +204,21 @@ class ChatRepository {
     );
 
     await msgRef.set(message.toMap());
+  }
+
+  Future<void> markMessageSeen({
+    required String roomId,
+    required String messageId,
+    required String uid,
+  }) async {
+    await _firestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+          'seenBy': FieldValue.arrayUnion([uid]),
+        });
   }
 
   // 🧹 Clear all messages in a room, but keep the chat room & contact
