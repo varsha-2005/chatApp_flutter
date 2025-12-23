@@ -1,4 +1,3 @@
-// lib/chat/screens/chat_detail_screen.dart
 import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/call/providers/call_controller.dart';
 import 'package:chat_app/chat/models/message_model.dart';
@@ -33,7 +32,7 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final ImagePicker _picker = ImagePicker(); // ✅ for picking image/video
+  final ImagePicker _picker = ImagePicker(); 
 
   void sendMessage() async {
     final text = _messageController.text.trim();
@@ -50,11 +49,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     });
   }
 
-  /// ✅ Pick image / video and send as a chat message
   Future<void> _pickAndSendMedia() async {
     final chatController = ref.read(chatControllerProvider);
 
-    // bottom sheet: choose image or video
     final type = await showModalBottomSheet<String>(
       context: context,
       builder: (ctx) {
@@ -99,7 +96,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       roomId: widget.roomId,
       file: file,
       isVideo: isVideo,
-      text: null, // caption support later if you want
+      text: null, 
     );
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -194,8 +191,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         .watch(chatControllerProvider)
         .getMessages(widget.roomId);
 
-    // final authController = ref.watch(authControllerProvider);
-    final currentUser = FirebaseAuth.instance.currentUser;
+    final authController = ref.watch(authControllerProvider);
+    final currentUser = authController.currentUser;
 
     return Scaffold(
       appBar: AppBar(

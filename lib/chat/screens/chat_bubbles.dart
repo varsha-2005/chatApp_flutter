@@ -48,7 +48,6 @@ class ChatBubble extends StatelessWidget {
   }
 }
 
-/// 🖼 Image bubble for media messages
 class ChatImageBubble extends StatelessWidget {
   final String url;
   final String time;
@@ -90,7 +89,6 @@ class ChatImageBubble extends StatelessWidget {
   }
 }
 
-/// 🎥 Video bubble for media messages
 class ChatVideoBubble extends StatefulWidget {
   final String url;
   final String time;

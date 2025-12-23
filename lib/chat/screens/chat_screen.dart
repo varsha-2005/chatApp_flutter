@@ -1,4 +1,5 @@
 import 'package:chat_app/auth/models/user_model.dart';
+import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/auth/widgets/chat_base_layout.dart';
 import 'package:chat_app/call/services/zego_service.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
@@ -36,7 +37,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chatController = ref.watch(chatControllerProvider);
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final authController = ref.watch(authControllerProvider);
+    final currentUser = authController.currentUser!;
 
     return Scaffold(
       body: BaseChatLayout(

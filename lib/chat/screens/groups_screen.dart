@@ -5,16 +5,13 @@ import 'package:chat_app/chat/screens/chat_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
-
 class GroupsScreen extends ConsumerWidget {
   const GroupsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final chatController = ref.watch(chatControllerProvider);
-    final currentUser = FirebaseAuth.instance.currentUser!;
+
 
     return BaseChatLayout(
       selectedChip: "Groups",

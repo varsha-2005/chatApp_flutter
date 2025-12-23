@@ -1,4 +1,5 @@
 import 'package:chat_app/auth/models/user_model.dart';
+import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,8 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
   @override
   void initState() {
     super.initState();
-    final currentUser = FirebaseAuth.instance.currentUser!;
+    final authController = ref.watch(authControllerProvider);
+    final currentUser = authController.currentUser!;
     selectedMembers.add(currentUser.uid); 
   }
 

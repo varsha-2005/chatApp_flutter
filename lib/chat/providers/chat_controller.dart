@@ -35,7 +35,6 @@ class ChatController {
     return repo.createGroupRoom(memberUids, groupName);
   }
 
-  // 🧹 Clear all chat messages with this user
   Future<void> clearChatWithUser(String otherUid) async {
     final roomId = await repo.createOrGetRoom(otherUid);
     await repo.clearChat(roomId);
