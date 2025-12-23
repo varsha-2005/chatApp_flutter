@@ -65,12 +65,40 @@ class ChatRepository {
       members: memberUids,
       isGroup: true,
       groupName: groupName,
+      groupImage: null,
       createdAt: DateTime.now(),
     );
 
     await _firestore.collection('chatRooms').doc(roomId).set(room.toMap());
 
     return roomId;
+  }
+
+  Future<void> updateGroupImage({
+    required String roomId,
+    required File file,
+  }) async {
+    final ext = p.extension(file.path);
+    final ref = _storage
+        .ref()
+        .child('groupImages')
+        .child(roomId)
+        .child('group$ext');
+
+    await ref.putFile(file);
+    final url = await ref.getDownloadURL();
+
+    await _firestore.collection('chatRooms').doc(roomId).update({
+      'groupImage': url,
+    });
+  }
+
+  Stream<ChatRoom> getRoomStream(String roomId) {
+    return _firestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .snapshots()
+        .map((doc) => ChatRoom.fromMap(doc.data()!));
   }
 
   Future<String> createOrGetRoom(String otherUid) async {

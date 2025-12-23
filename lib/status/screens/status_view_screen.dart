@@ -73,7 +73,6 @@ class _StatusViewScreenState extends ConsumerState<StatusViewScreen> {
         _setupForCurrentStatus();
       });
     } else {
-      // last status → close like WhatsApp
       Navigator.pop(context);
     }
   }
@@ -93,7 +92,7 @@ class _StatusViewScreenState extends ConsumerState<StatusViewScreen> {
     // ✅ TEXT-ONLY STATUS (no mediaUrl)
     if (hasText && !hasMedia) {
       return GestureDetector(
-        onTap: _showNext, // tap to go next status
+        onTap: _showNext, 
         child: Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -120,7 +119,6 @@ class _StatusViewScreenState extends ConsumerState<StatusViewScreen> {
       );
     }
 
-    // ✅ VIDEO STATUS
     if (st.isVideo) {
       if (!_isVideoInitialized || _videoController == null) {
         return const Center(
@@ -129,7 +127,6 @@ class _StatusViewScreenState extends ConsumerState<StatusViewScreen> {
       }
 
       return GestureDetector(
-        // tap toggles play/pause (video style)
         onTap: () {
           if (_videoController!.value.isPlaying) {
             _videoController!.pause();

@@ -236,7 +236,6 @@ class SettingsScreen extends ConsumerWidget {
     }
   }
 
-  // Show options: change photo / remove photo (on edit button)
   Future<void> _showPhotoOptions(
     BuildContext context,
     WidgetRef ref,

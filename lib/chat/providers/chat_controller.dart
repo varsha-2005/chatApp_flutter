@@ -35,6 +35,14 @@ class ChatController {
     return repo.createGroupRoom(memberUids, groupName);
   }
 
+  Future<void> updateGroupImage({required String roomId, required File file}) {
+    return repo.updateGroupImage(roomId: roomId, file: file);
+  }
+
+  Stream<ChatRoom> getRoom(String roomId) {
+    return repo.getRoomStream(roomId);
+  }
+
   Future<void> clearChatWithUser(String otherUid) async {
     final roomId = await repo.createOrGetRoom(otherUid);
     await repo.clearChat(roomId);

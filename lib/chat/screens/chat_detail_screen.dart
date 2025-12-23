@@ -1,7 +1,9 @@
 import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/call/providers/call_controller.dart';
+import 'package:chat_app/chat/models/chat_room_model.dart';
 import 'package:chat_app/chat/models/message_model.dart';
 import 'package:chat_app/chat/providers/chat_providers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -219,23 +221,58 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           onTap: () => Navigator.pop(context),
           child: const Icon(Icons.arrow_back, color: Colors.white),
         ),
-        title: Row(
-          children: [
-            CircleAvatar(
-              backgroundImage: widget.userImage.startsWith("http")
-                  ? NetworkImage(widget.userImage)
-                  : AssetImage(widget.userImage) as ImageProvider,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              widget.userName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ],
+        title: StreamBuilder<ChatRoom>(
+          stream: ref.watch(chatControllerProvider).getRoom(widget.roomId),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Text(widget.userName);
+            }
+
+            final room = snapshot.data!;
+            final isGroup = room.isGroup;
+
+            final name = isGroup ? room.groupName ?? 'Group' : widget.userName;
+            final image = isGroup ? room.groupImage ?? '' : widget.userImage;
+
+            return Row(
+              children: [
+                GestureDetector(
+                  onTap: isGroup
+                      ? () async {
+                          final picked = await ImagePicker().pickImage(
+                            source: ImageSource.gallery,
+                          );
+                          if (picked == null) return;
+
+                          await ref
+                              .read(chatControllerProvider)
+                              .updateGroupImage(
+                                roomId: widget.roomId,
+                                file: File(picked.path),
+                              );
+                        }
+                      : null,
+                  child: CircleAvatar(
+                    backgroundImage:
+                        image.isNotEmpty && image.startsWith('http')
+                        ? NetworkImage(image)
+                        : const AssetImage('assets/group_icon.png')
+                              as ImageProvider,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
+
         actions: [
           ZegoSendCallInvitationButton(
             isVideoCall: false,
