@@ -74,4 +74,29 @@ class ChatController {
       newText: newText,
     );
   }
+
+  // 🗑 Delete for everyone
+  Future<void> deleteMessageForEveryone({
+    required String roomId,
+    required String messageId,
+  }) {
+    return repo.deleteMessageForEveryone(roomId: roomId, messageId: messageId);
+  }
+
+  // 🗑 Delete for me
+  Future<void> deleteMessageForMe({
+    required String roomId,
+    required String messageId,
+  }) {
+    return repo.deleteMessageForMe(
+      roomId: roomId,
+      messageId: messageId,
+      uid: currentUserId,
+    );
+  }
+
+  // 🚪 Exit group
+  Future<void> exitGroup(String roomId) {
+    return repo.exitGroup(roomId: roomId, uid: currentUserId);
+  }
 }

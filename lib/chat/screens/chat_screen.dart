@@ -179,11 +179,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final roomId = await Navigator.push<String>(
             context,
             MaterialPageRoute(builder: (_) => const SelectMembersScreen()),
           );
+
+          if (roomId != null && mounted) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ChatDetailScreen(
+                  roomId: roomId,
+                  userName: "Group",
+                  userImage: "assets/group_icon.png",
+                ),
+              ),
+            );
+          }
         },
         child: const Icon(Icons.add),
       ),

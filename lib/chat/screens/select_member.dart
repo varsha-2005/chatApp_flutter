@@ -15,15 +15,14 @@ class SelectMembersScreen extends ConsumerStatefulWidget {
 }
 
 class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
-  final Set<String> selectedMembers = {}; 
+  final Set<String> selectedMembers = {};
   final TextEditingController groupNameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    final authController = ref.watch(authControllerProvider);
-    final currentUser = authController.currentUser!;
-    selectedMembers.add(currentUser.uid); 
+    final currentUser = FirebaseAuth.instance.currentUser!;
+    selectedMembers.add(currentUser.uid);
   }
 
   @override
@@ -115,7 +114,10 @@ class _SelectMembersScreenState extends ConsumerState<SelectMembersScreen> {
                           groupName: groupName,
                         );
 
-                        Navigator.pop(context, roomId); // return roomId if needed
+                        Navigator.pop(
+                          context,
+                          roomId,
+                        ); // return roomId if needed
                       },
                       child: const Text("Create Group"),
                     ),

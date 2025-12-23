@@ -32,7 +32,7 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  final ImagePicker _picker = ImagePicker(); 
+  final ImagePicker _picker = ImagePicker();
 
   void sendMessage() async {
     final text = _messageController.text.trim();
@@ -96,7 +96,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       roomId: widget.roomId,
       file: file,
       isVideo: isVideo,
-      text: null, 
+      text: null,
     );
 
     Future.delayed(const Duration(milliseconds: 200), () {
@@ -114,9 +114,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   }
 
   Future<void> _onMessageLongPress(ChatMessage msg, bool isMe) async {
-    if (!isMe) return;
-
     final chatController = ref.read(chatControllerProvider);
+    final currentUid = FirebaseAuth.instance.currentUser!.uid;
 
     showModalBottomSheet(
       context: context,
@@ -124,29 +123,47 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         return SafeArea(
           child: Wrap(
             children: [
-              ListTile(
-                leading: const Icon(Icons.edit),
-                title: const Text("Edit message"),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final newText = await _showEditMessageDialog(
-                    initialText: msg.message,
-                  );
-                  if (newText != null && newText.trim().isNotEmpty) {
-                    await chatController.editMessage(
+              // ✏ Edit (only sender)
+              if (isMe)
+                ListTile(
+                  leading: const Icon(Icons.edit),
+                  title: const Text("Edit message"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    final newText = await _showEditMessageDialog(
+                      initialText: msg.message,
+                    );
+                    if (newText != null && newText.trim().isNotEmpty) {
+                      await chatController.editMessage(
+                        roomId: widget.roomId,
+                        messageId: msg.id,
+                        newText: newText.trim(),
+                      );
+                    }
+                  },
+                ),
+
+              // 🗑 Delete for everyone (only sender)
+              if (isMe)
+                ListTile(
+                  leading: const Icon(Icons.delete_forever),
+                  title: const Text("Delete for everyone"),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await chatController.deleteMessageForEveryone(
                       roomId: widget.roomId,
                       messageId: msg.id,
-                      newText: newText.trim(),
                     );
-                  }
-                },
-              ),
+                  },
+                ),
+
+              // 🗑 Delete for me (anyone)
               ListTile(
                 leading: const Icon(Icons.delete),
-                title: const Text("Delete message"),
+                title: const Text("Delete for me"),
                 onTap: () async {
                   Navigator.pop(context);
-                  await chatController.deleteMessage(
+                  await chatController.deleteMessageForMe(
                     roomId: widget.roomId,
                     messageId: msg.id,
                   );
@@ -274,6 +291,23 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                   );
             },
           ),
+          PopupMenuButton<String>(
+            onSelected: (value) async {
+              if (value == 'exit_group') {
+                await ref.read(chatControllerProvider).exitGroup(widget.roomId);
+
+                if (!mounted) return;
+                Navigator.pop(context); // exit chat screen
+              }
+            },
+            itemBuilder: (context) => const [
+              PopupMenuItem(
+                value: 'exit_group',
+                child: Text('Exit Group', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+
           const SizedBox(width: 10),
         ],
       ),

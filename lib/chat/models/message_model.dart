@@ -1,13 +1,14 @@
 class ChatMessage {
-  final String id;          // message id
-  final String roomId;      // chat room id
-  final String senderId;    // who sent the message
-  final String message;     // text
-  final String? imageUrl;   // image or video URL
-  final bool isVideo;       // ✅ new: true if this is a video
+  final String id;
+  final String roomId;
+  final String senderId;
+  final String message;
+  final String? imageUrl;
+  final bool isVideo;
   final DateTime timeSent;
-  final bool isSeen;        // for personal chats
-  final List<String>? seenBy; // for groups → list of user ids
+  final bool isSeen;
+  final List<String>? seenBy;
+  final bool deletedForEveryone;
 
   ChatMessage({
     required this.id,
@@ -15,10 +16,11 @@ class ChatMessage {
     required this.senderId,
     required this.message,
     this.imageUrl,
-    required this.isVideo,          // ✅ required in constructor
+    required this.isVideo,
     required this.timeSent,
     required this.isSeen,
     this.seenBy,
+    this.deletedForEveryone = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,10 +30,11 @@ class ChatMessage {
       'senderId': senderId,
       'message': message,
       'imageUrl': imageUrl,
-      'isVideo': isVideo, // ✅ store media type
+      'isVideo': isVideo,
       'timeSent': timeSent.millisecondsSinceEpoch,
       'isSeen': isSeen,
       'seenBy': seenBy,
+      'deletedForEveryone': deletedForEveryone,
     };
   }
 
@@ -42,11 +45,13 @@ class ChatMessage {
       senderId: map['senderId'],
       message: map['message'],
       imageUrl: map['imageUrl'],
-      isVideo: map['isVideo'] ?? false, 
+      isVideo: map['isVideo'] ?? false,
       timeSent: DateTime.fromMillisecondsSinceEpoch(map['timeSent']),
       isSeen: map['isSeen'] ?? false,
-      seenBy:
-          map['seenBy'] != null ? List<String>.from(map['seenBy']) : null,
+      seenBy: map['seenBy'] != null
+          ? List<String>.from(map['seenBy'])
+          : null,
+      deletedForEveryone: map['deletedForEveryone'] ?? false,
     );
   }
 }

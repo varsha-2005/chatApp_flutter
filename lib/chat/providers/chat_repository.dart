@@ -7,7 +7,6 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart' as p;
 
-
 class ChatRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,7 +37,6 @@ class ChatRepository {
   //   (snapshot) =>
   //     snapshot.docs.map((doc) => AppUser.fromMap(doc.data())).toList()
   // );
-
 
   Stream<List<ChatMessage>> getMessages(String roomId) {
     return _firestore
@@ -81,8 +79,8 @@ class ChatRepository {
     final roomId = myUid == otherUid
         ? "${myUid}_$myUid"
         : myUid.hashCode <= otherUid.hashCode
-            ? "${myUid}_$otherUid"
-            : "${otherUid}_$myUid";
+        ? "${myUid}_$otherUid"
+        : "${otherUid}_$myUid";
 
     final doc = _firestore.collection('chatRooms').doc(roomId);
 
@@ -123,7 +121,7 @@ class ChatRepository {
     await msgRef.set(message.toMap());
   }
 
-    Future<void> sendMediaMessage({
+  Future<void> sendMediaMessage({
     required String roomId,
     required File file,
     required bool isVideo,
@@ -135,11 +133,7 @@ class ChatRepository {
     final ext = p.extension(file.path);
     final fileName = '${DateTime.now().millisecondsSinceEpoch}$ext';
 
-    final ref = _storage
-        .ref()
-        .child('chatMedia')
-        .child(roomId)
-        .child(fileName);
+    final ref = _storage.ref().child('chatMedia').child(roomId).child(fileName);
 
     final uploadTask = await ref.putFile(file);
     final downloadUrl = await uploadTask.ref.getDownloadURL();
@@ -155,8 +149,8 @@ class ChatRepository {
       id: msgRef.id,
       roomId: roomId,
       senderId: myUid,
-      message: text ?? '',    // optional caption
-      imageUrl: downloadUrl,  // ✅ image or video URL
+      message: text ?? '', // optional caption
+      imageUrl: downloadUrl, // ✅ image or video URL
       isVideo: isVideo,
       timeSent: DateTime.now(),
       isSeen: false,
@@ -165,7 +159,6 @@ class ChatRepository {
 
     await msgRef.set(message.toMap());
   }
-
 
   // 🧹 Clear all messages in a room, but keep the chat room & contact
   Future<void> clearChat(String roomId) async {
@@ -210,5 +203,43 @@ class ChatRepository {
         .collection('messages')
         .doc(messageId)
         .update({'message': newText});
+  }
+
+  Future<void> deleteMessageForMe({
+    required String roomId,
+    required String messageId,
+    required String uid,
+  }) async {
+    await _firestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+          'seenBy': FieldValue.arrayUnion(['deleted_$uid']),
+        });
+  }
+
+  Future<void> exitGroup({required String roomId, required String uid}) async {
+    await _firestore.collection('chatRooms').doc(roomId).update({
+      'members': FieldValue.arrayRemove([uid]),
+    });
+  }
+
+  Future<void> deleteMessageForEveryone({
+    required String roomId,
+    required String messageId,
+  }) async {
+    await _firestore
+        .collection('chatRooms')
+        .doc(roomId)
+        .collection('messages')
+        .doc(messageId)
+        .update({
+          'message': 'This message was deleted',
+          'imageUrl': null,
+          'isVideo': false,
+          'deletedForEveryone': true,
+        });
   }
 }

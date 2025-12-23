@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:chat_app/auth/models/user_model.dart';
-import 'package:chat_app/auth/providers/auth_controller.dart';
 import 'package:chat_app/auth/providers/auth_provider.dart';
 import 'package:chat_app/auth/screens/signup_screen.dart';
 import 'package:chat_app/auth/widgets/bottom_navigation.dart';
@@ -29,7 +28,7 @@ class SettingsScreen extends ConsumerWidget {
         // 👇 logout button on top-right
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Colors.red),
             onPressed: () async {
               await ref.read(authControllerProvider).logout();
 
