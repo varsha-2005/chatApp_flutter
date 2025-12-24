@@ -12,7 +12,6 @@ class GroupsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chatController = ref.watch(chatControllerProvider);
 
-
     return BaseChatLayout(
       selectedChip: "Groups",
       content: StreamBuilder<List<ChatRoom>>(
@@ -47,14 +46,18 @@ class GroupsScreen extends ConsumerWidget {
                       builder: (_) => ChatDetailScreen(
                         roomId: group.roomId,
                         userName: group.groupName ?? "Group",
-                        userImage: "assets/group_icon.png", // default group icon
+                        userImage:
+                            group.groupImage ??
+                            "assets/app_logo.png", // default group icon
                       ),
                     ),
                   );
                 },
-                leading: const CircleAvatar(
+                leading: CircleAvatar(
                   radius: 24,
-                  backgroundImage: AssetImage("assets/group_icon.png"),
+                  backgroundImage: group.groupImage != null
+                      ? NetworkImage(group.groupImage!)
+                      : AssetImage("assets/app_logo.png") as ImageProvider,
                 ),
                 title: Text(
                   group.groupName ?? "Unnamed Group",

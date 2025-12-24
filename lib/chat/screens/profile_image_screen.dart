@@ -22,10 +22,7 @@ class ProfileImageScreen extends StatelessWidget {
         backgroundColor: Colors.black,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          userName,
-          style: const TextStyle(color: Colors.white),
-        ),
+        title: Text(userName, style: const TextStyle(color: Colors.white)),
       ),
       body: Center(
         child: Hero(
@@ -33,9 +30,7 @@ class ProfileImageScreen extends StatelessWidget {
           child: InteractiveViewer(
             minScale: 0.8,
             maxScale: 4,
-            child: isNetwork
-                ? Image.network(imageUrl)
-                : Image.asset(imageUrl),
+            child: isNetwork ? Image.network(imageUrl) : Image.asset(imageUrl),
           ),
         ),
       ),

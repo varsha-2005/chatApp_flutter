@@ -73,7 +73,7 @@ class ChatDetailAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 child: CircleAvatar(
                   backgroundImage: image.isNotEmpty && image.startsWith('http')
                       ? NetworkImage(image)
-                      : const AssetImage('assets/group_icon.png')
+                      : const AssetImage('assets/app_logo.png')
                             as ImageProvider,
                 ),
               ),

@@ -117,7 +117,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                             builder: (_) => ProfileImageScreen(
                               imageUrl: user.image.isNotEmpty
                                   ? user.image
-                                  : "assets/google_logo.png",
+                                  : "assets/app_logo.png",
                               userName: user.name,
                               heroTag: "profile-${user.uid}",
                             ),
@@ -132,7 +132,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                               ? (user.image.startsWith("http")
                                     ? NetworkImage(user.image)
                                     : AssetImage(user.image) as ImageProvider)
-                              : const AssetImage("assets/google_logo.png"),
+                              : const AssetImage("assets/app_logo.png"),
                         ),
                       ),
                     ),
@@ -166,7 +166,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 : user.name,
                             userImage: user.image.isNotEmpty
                                 ? user.image
-                                : "assets/google_logo.png",
+                                : "assets/app_logo.png",
                           ),
                         ),
                       );
