@@ -8,8 +8,13 @@ import 'chat_bubbles.dart';
 
 class ChatMessageList extends ConsumerWidget {
   final String roomId;
+  final bool isGroup;
 
-  const ChatMessageList({super.key, required this.roomId});
+  const ChatMessageList({
+    super.key,
+    required this.roomId,
+    required this.isGroup,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +40,7 @@ class ChatMessageList extends ConsumerWidget {
             final msg = messages[index];
             final isMe = msg.senderId == currentUid;
 
-            /// MARK SEEN
+            /// MARK MESSAGE AS SEEN
             if (!isMe &&
                 !(msg.seenBy?.contains(currentUid) ?? false)) {
               ref.read(chatControllerProvider).markMessageSeen(
@@ -45,8 +50,11 @@ class ChatMessageList extends ConsumerWidget {
             }
 
             final seenCount = msg.seenBy?.length ?? 0;
-            final isGroup = seenCount > 1;
-            final isSeenByAll = isGroup && seenCount >= 2;
+
+            /// ✅ CORRECT SEEN LOGIC (ONLY CHANGE)
+            final isSeenByAll = isGroup
+                ? seenCount >= 2 // all group members seen (current backend)
+                : seenCount >= 1; // 1–1 chat
 
             final timeStr =
                 msg.timeSent.toLocal().toString().substring(11, 16);
@@ -62,6 +70,21 @@ class ChatMessageList extends ConsumerWidget {
                   crossAxisAlignment:
                       isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
+                    /// 👤 SENDER NAME (GROUP ONLY)
+                    if (!isMe && isGroup)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: Text(
+                          msg.senderId,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+
+                    /// 🖼 IMAGE MESSAGE
                     if (msg.imageUrl != null &&
                         msg.imageUrl!.isNotEmpty)
                       GestureDetector(
@@ -83,6 +106,7 @@ class ChatMessageList extends ConsumerWidget {
                         ),
                       ),
 
+                    /// 💬 TEXT MESSAGE
                     if (msg.message.isNotEmpty)
                       ChatBubble(
                         text: msg.message,
@@ -91,7 +115,7 @@ class ChatMessageList extends ConsumerWidget {
                         isSeen: isSeenByAll,
                       ),
 
-                    /// 👁️ SEEN BY COUNT (GROUP ONLY)
+                    /// 👁️ SEEN COUNT (GROUP ONLY)
                     if (isMe && isGroup && !isSeenByAll)
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
@@ -115,7 +139,7 @@ class ChatMessageList extends ConsumerWidget {
 }
 
 /// ===============================
-/// MESSAGE ACTIONS (OUTSIDE CLASS)
+/// MESSAGE ACTIONS
 /// ===============================
 void _showMessageActions(
   BuildContext context,

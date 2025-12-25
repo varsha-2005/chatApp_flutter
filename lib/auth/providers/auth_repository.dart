@@ -19,7 +19,7 @@ class AuthRepository {
       email: email,
       password: password,
     );
-
+    await cred.user!.updateDisplayName(name);
     final user = AppUser(
       uid: cred.user!.uid,
       name: name,
@@ -28,21 +28,12 @@ class AuthRepository {
       lastSeen: DateTime.now(),
     );
 
-    await _firestore
-        .collection('users')
-        .doc(user.uid)
-        .set(user.toMap());
+    await _firestore.collection('users').doc(user.uid).set(user.toMap());
   }
 
   // ---------------- LOGIN ----------------
-  Future<void> login({
-    required String email,
-    required String password,
-  }) {
-    return _auth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
+  Future<void> login({required String email, required String password}) {
+    return _auth.signInWithEmailAndPassword(email: email, password: password);
   }
 
   // ---------------- RESET PASSWORD ----------------
@@ -63,14 +54,12 @@ class AuthRepository {
       idToken: googleAuth.idToken,
     );
 
-    final userCredential =
-        await _auth.signInWithCredential(credential);
+    final userCredential = await _auth.signInWithCredential(credential);
 
     final user = userCredential.user;
     if (user == null) throw Exception("Firebase auth failed");
 
-    final userDoc =
-        await _firestore.collection('users').doc(user.uid).get();
+    final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
     if (!userDoc.exists) {
       final newUser = AppUser(
@@ -81,10 +70,7 @@ class AuthRepository {
         lastSeen: DateTime.now(),
       );
 
-      await _firestore
-          .collection('users')
-          .doc(user.uid)
-          .set(newUser.toMap());
+      await _firestore.collection('users').doc(user.uid).set(newUser.toMap());
     }
   }
 

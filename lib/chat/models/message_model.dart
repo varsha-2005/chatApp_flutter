@@ -2,6 +2,7 @@ class ChatMessage {
   final String id;
   final String roomId;
   final String senderId;
+  final String senderName;  
   final String message;
   final String? imageUrl;
   final bool isVideo;
@@ -14,6 +15,7 @@ class ChatMessage {
     required this.id,
     required this.roomId,
     required this.senderId,
+    required this.senderName,
     required this.message,
     this.imageUrl,
     required this.isVideo,
@@ -28,6 +30,7 @@ class ChatMessage {
       'id': id,
       'roomId': roomId,
       'senderId': senderId,
+      'senderName': senderName,
       'message': message,
       'imageUrl': imageUrl,
       'isVideo': isVideo,
@@ -43,6 +46,7 @@ class ChatMessage {
       id: map['id'],
       roomId: map['roomId'],
       senderId: map['senderId'],
+      senderName: map['senderName'] ?? 'Unknown',
       message: map['message'],
       imageUrl: map['imageUrl'],
       isVideo: map['isVideo'] ?? false,

@@ -146,7 +146,7 @@ class ChatRepository {
     required String roomId,
     required String text,
   }) async {
-    final myUid = _auth.currentUser!.uid;
+    final user = _auth.currentUser!;
     final msgRef = _firestore
         .collection('chatRooms')
         .doc(roomId)
@@ -156,14 +156,16 @@ class ChatRepository {
     final message = ChatMessage(
       id: msgRef.id,
       roomId: roomId,
-      senderId: myUid,
+      senderId: user.uid,
+      senderName: user.displayName ?? "Unknown", // ✅ ADD
       message: text,
-      timeSent: DateTime.now(),
-      isSeen: false,
       imageUrl: null,
       isVideo: false,
+      timeSent: DateTime.now(),
+      isSeen: false,
       seenBy: [],
     );
+
     await msgRef.set(message.toMap());
   }
 
@@ -173,7 +175,7 @@ class ChatRepository {
     required bool isVideo,
     String? text,
   }) async {
-    final myUid = _auth.currentUser!.uid;
+    // final myUid = _auth.currentUser!.uid;
 
     // 1️⃣ Upload file to Firebase Storage
     final ext = p.extension(file.path);
@@ -191,10 +193,13 @@ class ChatRepository {
         .collection('messages')
         .doc();
 
+    final user = _auth.currentUser!;
+
     final message = ChatMessage(
       id: msgRef.id,
       roomId: roomId,
-      senderId: myUid,
+      senderId: user.uid,
+      senderName: user.displayName ?? 'Unknown',
       message: text ?? '', // optional caption
       imageUrl: downloadUrl, // ✅ image or video URL
       isVideo: isVideo,
