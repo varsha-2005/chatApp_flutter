@@ -75,7 +75,7 @@ class ChatMessageList extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 2),
                         child: Text(
-                          msg.senderId,
+                          msg.senderName,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,

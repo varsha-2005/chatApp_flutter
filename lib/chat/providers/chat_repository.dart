@@ -153,11 +153,13 @@ class ChatRepository {
         .collection('messages')
         .doc();
 
+    final userDoc = await _firestore.collection('users').doc(user.uid).get();
+
     final message = ChatMessage(
       id: msgRef.id,
       roomId: roomId,
       senderId: user.uid,
-      senderName: user.displayName ?? "Unknown", // ✅ ADD
+      senderName: userDoc.data()?['name'] ?? 'Unknown',
       message: text,
       imageUrl: null,
       isVideo: false,
@@ -194,12 +196,13 @@ class ChatRepository {
         .doc();
 
     final user = _auth.currentUser!;
+    final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
     final message = ChatMessage(
       id: msgRef.id,
       roomId: roomId,
       senderId: user.uid,
-      senderName: user.displayName ?? 'Unknown',
+      senderName: userDoc.data()?['name'] ?? 'Unknown',
       message: text ?? '', // optional caption
       imageUrl: downloadUrl, // ✅ image or video URL
       isVideo: isVideo,
